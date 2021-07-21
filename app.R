@@ -49,7 +49,7 @@ csspath <- "app_style.css"
 # Data for plots and tables
 ref_list <- readRDS("data/ref_list.rds")
 scen_list <- readRDS("data/scen_list.rds")
-chg_dfs <- readRDS("data/chg_dfs.rds")
+chg_dfs <- readRDS("data/chg_dfs_eng.rds") #english version
 
 # Flood data
 flood <- read.table("data/flood_coord_proj.txt", dec = ",", sep = "\t", 
@@ -87,7 +87,7 @@ locations <- c("Vuoksi", "Kymijoki", "Naarajärvi, Saarijärven reitti", "Konnev
   sort()
 
 timeframe_names <- c("2010-2039", "2040-2069") # 1, 2
-scenario_names <- c("Mean of multiple scenarios","Warm and wet", "Cold") # 1, 2, 3
+scenario_names <- c("Average of multiple scenarios","Warm and wet", "Cold") # 1, 2, 3
 floodmap_names <- c("Mean (%)", "Max (%)", "Min (%)")
 
 #### ShinyApp Server -----------------------------------------------------------
@@ -120,7 +120,7 @@ server <- function(input, output, session){
                 Virtaama_ref = colDef(
                   minWidth = 110,
                   name = "Flow rate (\u33a5/s) reference period",
-                  header = with_tooltip("Flow rate (\u33a5/s) reference period", "Flow rate  of the reference period during the selected time period.")
+                  header = with_tooltip("Flow rate (\u33a5/s) reference period", "Flow rate of the reference period during the selected time period.")
                   
                 ),
                 
@@ -132,7 +132,7 @@ server <- function(input, output, session){
                     }),
                 
                 Muutos = colDef(
-                  header = with_tooltip("Change","Change compared to reference period. Red color indicates increase in flow rate, blue indicates reduced flow rate"),
+                  header = with_tooltip("Change","Change compared to reference period. Red colour indicates increase in flow rate, blue indicates reduced flow rate."),
                   cell = function(value) {
                     if (value >= 0) paste0("+", value, " %") else paste0(value, " %")
                   },
@@ -204,9 +204,9 @@ server <- function(input, output, session){
               "2" = "tan1", 
               "3" = "turquoise3")
     
-    scens <- c("1" = "Mean of multiple scenarios (with RCP4.5 emission scenario)",
-               "2" = "Warm and wet (MIROC-ESM-CHEM global climate model with RCP4.5 emission scenario)",
-               "3" = "Cold (CESM1-CAM5 global climate model with RCP2.6 emission scenario)")
+    scens <- c("1" = "Average of multiple scenarios (with RCP4.5 emission scenario)",
+               "2" = "Warm and wet (MIROC-ESM-CHEM global climate model, RCP4.5 emission scenario)",
+               "3" = "Cold (CESM1-CAM5 global climate model, RCP2.6 emission scenario)")
     
     times <- c("1" = "2010-2039",
                "2" = "2040-2069")
@@ -383,7 +383,7 @@ server <- function(input, output, session){
                 
                 Keskiarvo = colDef(
                   name = "Average",
-                  header = with_tooltip("Average", "Average change in 25 scenarios. Click to arrange into alphabetical order."),
+                  header = with_tooltip("Average", "Average change in 25 scenarios. Click to arrange into numerical order."),
                   cell = function(value) {
                     if (value >= 0) paste0("+", value, " %") else paste0(value, " %")
                   },
@@ -398,7 +398,7 @@ server <- function(input, output, session){
                 }),
                 Maksimi = colDef(
                   name = "Maximum",
-                  header = with_tooltip("Maximum", "Maximum change in 25 scenarios. Click to arrange into alphabetical order."),
+                  header = with_tooltip("Maximum", "Maximum change in 25 scenarios. Click to arrange into numerical order."),
                   cell = function(value) {
                     if (value >= 0) paste0("+", value, " %") else paste0(value, " %")
                   },
@@ -413,7 +413,7 @@ server <- function(input, output, session){
                 
                 Minimi = colDef(
                   name = "Minimum",
-                  header = with_tooltip("Minimum", "Minimum change in 25 scenarios. Click to arrange into alphabetical order"),
+                  header = with_tooltip("Minimum", "Minimum change in 25 scenarios. Click to arrange into numerical order"),
                   cell = function(value) {
                     if (value >= 0) paste0("+", value, " %") else paste0(value, " %")
                   },
@@ -495,7 +495,7 @@ server <- function(input, output, session){
                        color = ~pal(Minimi),
                        label = ~paste(Nimi, ", change: ", Minimi, "%", sep =""),
                        labelOptions = labelOptions(textsize = "14px", ),
-                       group = "Minumum (%)") %>%
+                       group = "Minimum (%)") %>%
       # Radiobuttons for each column
       addLayersControl(
         baseGroups = c("Average (%)", "Maximum (%)", "Minimum (%)"),
@@ -620,7 +620,7 @@ ui <- shinyUI(fluidPage(
                 
                  div(),
                  br(),
-                 HTML(paste("<p id='version-info' style='color: grey; font-size: small;'>Versio<br>", 
+                 HTML(paste("<p id='version-info' style='color: grey; font-size: small;'>Version<br>", 
                             app_v, "</p>")),
                ),
                # Main panel
@@ -634,19 +634,19 @@ ui <- shinyUI(fluidPage(
                                                  width = "100%",
                                                  height = "100%"),
                                    # Tooltip over the plot
-                                   bsPopover("plo", "Graph", "The graph visualizes the daily simulated mean flow rate and range (daily maximum and minumum) for the reference period (1981-2010) and the selected climate change scenario and time period Additional information about the scenarios can be found in the 'More information' tab. You can download the graph from the link in the side panel.", 
-                                             "right", trigger = "click"),
+                                   # bsPopover("plo", "Plot", "The graph visualizes the daily simulated mean flow rate and range (daily maximum and minumum) for the reference period (1981-2010) and the selected climate change scenario and time period Additional information about the scenarios can be found in the 'More information' tab. You can download the graph from the link in the side panel.", 
+                                   #           "right", trigger = "click"),
                                    
                                    # Table
-                                   reactableOutput("table1", width = "100%"),
+                                   reactableOutput("table1", width = "100%")),
                                    # Tooltip over the table
-                                   bsPopover("table1", "Table", "The table shows the mean value of daily flow rate, seasonal variation, and mean values of maximum and minimum flow rate Table columns show the simulated flow rate for the reference period (1981-2010) and for selected climate change scenario and time period in the selected location, as well as the change in the values in percents (%). You can download the table from the link in the side panel.",
-                                             "right", trigger = "click")),
+                                   # bsPopover("table1", "Taulukko", "The table shows the mean value of daily flow rate, seasonal variation, and the mean overflow and underflow. Table columns show the simulated flow rate for the reference period (1981-2010) and for selected climate change scenario and time period in selected location, and the change in the values (%). You can download the table from the link in the side panel.",
+                                   #           "right", trigger = "click")),
 
                           
                             column(5,
                                  br(),
-                                 p("Mapped locations of modelled flow rate points"),
+                                 p("Locations of flow simulation sites"),
                                  # Map
                                  leafletOutput("map1", height = 750, width = "100%"))))
                  ,
@@ -669,9 +669,9 @@ ui <- shinyUI(fluidPage(
                  bsTooltip("timeframe2", "Select one of the two future time periods.", "bottom"),
                  
                  # Download table
-                 strong("Latauslinkki"),
+                 strong("Download link"),
                  div(),
-                 downloadLink("taulukko2_lataus", label = "Download table(csv)"),
+                 downloadLink("taulukko2_lataus", label = "Download table (csv)"),
                  bsTooltip("taulukko2_lataus", "Download table to your device as CSV.", "bottom"),
                  br(),
                  
@@ -695,8 +695,8 @@ ui <- shinyUI(fluidPage(
                           column(6,
                                  br(),
                                  strong("Visualize changes in floods by selecting a layer from the map."),
-                                 p(span(strong("Red", style = "color:#b2182b")), "colour refers to an increase of flooding and ",
-                                 span(strong("blue", style ="color:#3275B8")), "refers to a decrease of flooding."),
+                                 p(span(strong("Red", style = "color:#b2182b")), "colour refers to an increase in floods and ",
+                                 span(strong("blue", style ="color:#3275B8")), "refers to a decrease in floods."),
                                  
                                  # Map
                                  leafletOutput("map2", height=750, width = "100%")))),
